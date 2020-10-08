@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>473903170729-bu4kkl1crog7llehc3sh03ih4n7lv092.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.473903170729-bu4kkl1crog7llehc3sh03ih4n7lv092</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCGj6R4BMlhz46hVFpfBhLcE0CNfKYqtbs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>473903170729</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>triphome.Project</string>
+	<key>PROJECT_ID</key>
+	<string>triphomepk-a42d0</string>
+	<key>STORAGE_BUCKET</key>
+	<string>triphomepk-a42d0.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:473903170729:ios:8a0de3434ed189add395b8</string>
+	<key>DATABASE_URL</key>
+	<string>https://triphomepk-a42d0.firebaseio.com</string>
+</dict>
+</plist>
