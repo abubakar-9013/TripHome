@@ -17,6 +17,9 @@ target 'Project' do
      pod 'lottie-ios'
      pod 'AwaitKit', '~> 5.2.0'
      pod 'Kingfisher', '~> 5.0'
+     pod "WARangeSlider"
+
+     
 
 
 end

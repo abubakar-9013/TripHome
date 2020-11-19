@@ -16,6 +16,7 @@ class TouristHomeScreenViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     var listingDetailArray:[New_CellComponents] = []
+    var filteredListingDetailArray : [New_CellComponents] = []
     var typeOfListing:String = ""
     var charges:Int = 0
     var rating:Float = 0.0
@@ -42,6 +43,7 @@ class TouristHomeScreenViewController: UIViewController {
     var addressArray:[String] = []
     
     
+    
     //Arrays related to fetching data
     var listingNamesArray:[String] = ["Hotel", "House", "Private Room", "Shared Room","Restaurant"]
     var arrayForFacilities:[String] = []
@@ -55,12 +57,19 @@ class TouristHomeScreenViewController: UIViewController {
     
     
     var myGroup = DispatchGroup()
+    var filterApplied = false   // When filter is applied, it will be true and will filter out charges info
+    var minVal = 0
+    var maxVal = 0
+    var listingData:New_CellComponents?
+    
+    
     
     
     
     override func viewDidLoad() {
             super.viewDidLoad()
             
+            print("Min \(minVal),maxVal \(maxVal)")
             
             //SVProgressHUD
               SVProgressHUD.show()
@@ -89,6 +98,15 @@ class TouristHomeScreenViewController: UIViewController {
                 }
             }
         }
+        
+        //Create BarButton
+        let filterButton = UIImageView(image: UIImage(named: "filter"))
+        let filterBarButton = UIBarButtonItem(customView: filterButton)
+        self.navigationItem.rightBarButtonItem = filterBarButton
+        
+        let filterGest = UITapGestureRecognizer(target: self, action: #selector(openFilter))
+        filterButton.addGestureRecognizer(filterGest)
+        
 
     }
     
@@ -104,6 +122,12 @@ class TouristHomeScreenViewController: UIViewController {
             let uiImage = UIImage(named: "background.jpg")
             let backgroundColor = UIColor(patternImage: uiImage!)
             self.navigationController?.navigationBar.barTintColor = backgroundColor
+    }
+    
+    @objc func openFilter() {
+        
+        let vc = storyboard?.instantiateViewController(identifier: "filterVC") as! FilterViewController
+        self.present(vc, animated: true, completion: nil)
     }
     
 
@@ -199,7 +223,17 @@ class TouristHomeScreenViewController: UIViewController {
                     
                     let data = New_CellComponents(image: self.arrayOfListingImages[0], typeOfListing: self.typeOfListing, charges: self.charges, rating: self.rating, nameOfListing: self.nameOfListing, cityName: self.cityName, detail: self.details, currency: self.currency, days: self.days)
                     
-                    self.listingDetailArray.append(data)
+                    if self.filterApplied {
+                        
+                        if self.charges >= self.minVal && self.charges <= self.maxVal {
+                            self.filteredListingDetailArray.append(data)
+                        }
+                    }
+                    else {
+                            
+                        self.listingDetailArray.append(data)
+                    }
+                    
                     self.tableView.reloadData()
                     
                                 
@@ -216,16 +250,31 @@ class TouristHomeScreenViewController: UIViewController {
     extension TouristHomeScreenViewController:UITableViewDataSource,UITableViewDelegate {
         
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return listingDetailArray.count
+            
+            if filterApplied {
+                return filteredListingDetailArray.count
+            }
+            else {
+                return listingDetailArray.count
+            }
+            
         }
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let listingData = listingDetailArray[indexPath.row]
+            
+            
+            if filterApplied {
+                listingData = filteredListingDetailArray[indexPath.row]
+            }
+            else {
+                listingData = listingDetailArray[indexPath.row]
+            }
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "TouristHomeCell") as! TouristHomeScreenTableViewCell
-            cell.setListingData(array: listingData)
+            cell.setListingData(array: listingData!)
             
             cell.ListingImage.kf.indicatorType = .activity
-            let stringUrl = listingData.imageUrl
+            let stringUrl = listingData!.imageUrl
             let url = URL(string: stringUrl)
             let resource = ImageResource(downloadURL: url!, cacheKey: stringUrl)
             cell.ListingImage.kf.setImage(with: resource, placeholder: UIImage(named: "placeHolderImage"))
@@ -246,6 +295,10 @@ class TouristHomeScreenViewController: UIViewController {
         override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
             if segue.identifier == "toTouristListingDetail" {
                 if let destVC = segue.destination as? TouristPropertyClickedViewController {
+                    
+                    if filterApplied {
+                        listingDetailArray = filteredListingDetailArray
+                    }
                     
                     destVC.arrayForListing = mainArrayOfFacilitites[indexSelected]
                     destVC.valueForListingName = listingDetailArray[indexSelected].nameOfListing

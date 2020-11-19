@@ -362,6 +362,7 @@ PODS:
     - PromiseKit/CorePromise
   - PromisesObjC (1.2.8)
   - SVProgressHUD (2.2.5)
+  - WARangeSlider (1.1.1)
 
 DEPENDENCIES:
   - AwaitKit (~> 5.2.0)
@@ -374,6 +375,7 @@ DEPENDENCIES:
   - Kingfisher (~> 5.0)
   - lottie-ios
   - SVProgressHUD
+  - WARangeSlider
 
 SPEC REPOS:
   trunk:
@@ -405,6 +407,7 @@ SPEC REPOS:
     - PromiseKit
     - PromisesObjC
     - SVProgressHUD
+    - WARangeSlider
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
@@ -435,7 +438,8 @@ SPEC CHECKSUMS:
   PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  WARangeSlider: 54b3e0853b8d16c444fd539005901aecee86837d
 
-PODFILE CHECKSUM: 2182cd21d79ff05c9e00333d6623efd7a95a26b7
+PODFILE CHECKSUM: b28e915f37e58c8bfc5a4d823098af652187e990
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.10.0
