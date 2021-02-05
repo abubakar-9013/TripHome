@@ -42,6 +42,8 @@ class OwnerAddListing2ViewController: UIViewController {
     @IBOutlet weak var nextButtonTopDistanceToErrorLabel: NSLayoutConstraint!
     
     
+    
+    
     //Variable to receive data from testViewController through protocol and delegate
     var delegateToReceieveData:HandleMapSearch? = nil
     
@@ -60,8 +62,17 @@ class OwnerAddListing2ViewController: UIViewController {
     let DataForCurrency : [String] = ["USD", "Rs"]
     let DataForDays : [String] = ["PerNight", "PerWeek", "PerMonth"]
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        errorLabel.alpha = 0
+        
+        if StaticVariable.WhichType == "Hotel" {
+            bedsStackView.isHidden = true
+            stackViewWithRoomsAndGuests.distribution = .fillEqually
+        }
+        
         if StaticVariable.WhichType == "Restaurant" {
             stackViewWithRoomsAndGuests.isHidden = true
             currencyField.text = "Rs"
@@ -70,26 +81,16 @@ class OwnerAddListing2ViewController: UIViewController {
             chargesField.text = "-"
             chargesField.isUserInteractionEnabled = false
             chargesField.isEnabled = false
-            daysField.text = "Dish"
+            daysField.text = "-"
             daysField.isUserInteractionEnabled = false
             daysField.isEnabled = false
-            self.view.layoutIfNeeded()
-        }
-        
-        if StaticVariable.WhichType == "Hotel" {
-            
-            bedsStackView.isHidden = true
-            stackViewWithRoomsAndGuests.distribution = .fillEqually
-            
-        }
-        
-        if StaticVariable.WhichType == "Restaurant" {
             currencyPicker.isHidden = true
             daysPicker.isHidden = true
             parentStackTopToTextField.constant = 20
             parentStackHeight.constant = 115
             emailAddressViewHeight.constant = 50
             nextButtonTopDistanceToErrorLabel.constant = 165
+//            errorLabelBottomConstraint.constant = -150
             
             self.view.layoutIfNeeded()
         }
@@ -181,8 +182,7 @@ class OwnerAddListing2ViewController: UIViewController {
         
         navigationController?.pushViewController(VC, animated: true)
     }
-    
-    
+     
     
     func CheckNumber(type: String) -> Int {
         let Number = self.defaults.integer(forKey: type)
@@ -317,6 +317,9 @@ class OwnerAddListing2ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "AddPropertyTwo" {
             if let destVC = segue.destination as? OwnerAddListingFacilitiesViewController {
+                if StaticVariable.WhichType == "Restaurant" {
+                    destVC.isRestaurant = true
+                }
                 if BoolForEditing_2 {
                     destVC.path = path
                     destVC.boolForEditing_3 = true
@@ -379,8 +382,9 @@ extension OwnerAddListing2ViewController: UITextFieldDelegate {
         
         if let sdcTextField = textField as? TextFieldMinMaxCharachters {
             value = sdcTextField.verifyFields(shouldChangeCharactersIn: range, replacementString: string)
+            return value!
         }
-        return value!
+        return true
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {

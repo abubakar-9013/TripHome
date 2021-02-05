@@ -15,6 +15,16 @@ import SVProgressHUD
 
 class Signup2ViewController: UIViewController {
     
+    var switchToLoginLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        lbl.text = "Login"
+        lbl.textColor = .black
+        lbl.font = UIFont(name: "AvenirNext-bold", size: 14)
+        lbl.isUserInteractionEnabled = true
+        return lbl
+    }()
+    
     @IBOutlet weak var Email: UITextField!
     @IBOutlet weak var NameField: TextFieldMinMaxCharachters!
     @IBOutlet weak var passwordFiled: UITextField!
@@ -25,10 +35,6 @@ class Signup2ViewController: UIViewController {
     
     //Constraints to adjust Keyboard
     @IBOutlet weak var designableFieldTopConstraint: NSLayoutConstraint!
-    
-    
-
-    
     var typeOfUser:String?
     
     @IBAction func choiceButton(_ sender: UIButton) {
@@ -75,6 +81,7 @@ class Signup2ViewController: UIViewController {
         Email.delegate = self
         NameField.delegate = self
         passwordFiled.delegate = self
+        passwordFiled.isSecureTextEntry = true
         
         //Keyboard done button
         let toolbar = UIToolbar()
@@ -91,11 +98,22 @@ class Signup2ViewController: UIViewController {
         NameField.delegate = self
         NameField.maxLength = 14
         
+        // Add switchToLogin Label
+        view.addSubview(switchToLoginLabel)
+        NSLayoutConstraint.activate([
         
+            switchToLoginLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            switchToLoginLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+        ])
         
-        
+        let tapGest = UITapGestureRecognizer(target: self, action: #selector(navigateToLogin))
+        switchToLoginLabel.addGestureRecognizer(tapGest)
+    }
     
-        // Do any additional setup after loading the view.
+    @objc func navigateToLogin() {
+        let controller = storyboard?.instantiateViewController(identifier: "loginScreen") as! SignInViewController
+        controller.modalPresentationStyle = .fullScreen
+        self.present(controller, animated: true, completion: nil)
     }
     
     @objc func doneTapped() {

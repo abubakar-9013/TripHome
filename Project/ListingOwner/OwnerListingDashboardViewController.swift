@@ -175,7 +175,7 @@ class OwnerListingDashboardViewController: UIViewController {
                     self.arrayForFacilities = myData["Facilities"] as? [String] ?? [""]
                     self.mainArrayOfFacilitites.append(self.arrayForFacilities)
         
-                    let dataArray = New_CellComponents(image: self.arrayOfListingImages[0], typeOfListing: self.typeOfListing , charges: self.charges, rating: 4.1, nameOfListing: self.nameOfListing , cityName: self.cityName, detail: self.details, currency: self.currency, days: self.days)
+                    let dataArray = New_CellComponents(image: self.arrayOfListingImages[0], typeOfListing: self.typeOfListing , charges: self.charges, rating: 0.0, nameOfListing: self.nameOfListing , cityName: self.cityName, detail: self.details, currency: self.currency, days: self.days)
                     self.listingDetailArray.append(dataArray)
                     
                     self.tableView.reloadData()

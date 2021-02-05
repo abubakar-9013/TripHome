@@ -31,6 +31,7 @@ class OwnerHomeCellClickedViewController: UIViewController {
     @IBOutlet weak var firstLabel: UILabel!
     @IBOutlet weak var secondLabel: UILabel!
     @IBOutlet weak var thirdLabel: UILabel!
+    @IBOutlet weak var viewLocation: UIButton!
     @IBOutlet weak var fourthLabel: UILabel!
     @IBOutlet weak var fifthLabel: UILabel!
     @IBOutlet weak var sixthLabel: UILabel!
@@ -172,6 +173,18 @@ class OwnerHomeCellClickedViewController: UIViewController {
     }
     
     
+    var viewMenuButton: UIButton = {
+       
+        let btn = UIButton()
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.backgroundColor = .systemPurple
+        btn.setTitle("View Menu", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        btn.layer.cornerRadius = 18
+        return btn
+    }()
+    
     
     
     
@@ -181,8 +194,7 @@ class OwnerHomeCellClickedViewController: UIViewController {
         SVProgressHUD.setContainerView(collectionView)
         SVProgressHUD.setBackgroundColor(.clear)
         SVProgressHUD.show()
-        
-        
+        setupMenuButton()
         arrayOfLabels = [firstLabel,secondLabel,thirdLabel,fourthLabel,fifthLabel,sixthLabel]
         listingName.text = valueForListingName
         listingDetail.text = valueForListingDetail
@@ -252,6 +264,29 @@ class OwnerHomeCellClickedViewController: UIViewController {
         }
         
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if listingCharges.text == "0" {
+            //The listing is Restaurant
+            viewMenuButton.alpha = 1
+        }
+        else {
+            viewMenuButton.alpha = 0
+        }
+    }
+    
+    func setupMenuButton() {
+        view.addSubview(viewMenuButton)
+        
+        NSLayoutConstraint.activate([
+        
+            viewMenuButton.widthAnchor.constraint(equalToConstant: 120),
+            viewMenuButton.heightAnchor.constraint(equalToConstant: 36),
+            viewMenuButton.centerYAnchor.constraint(equalTo: viewLocation.centerYAnchor),
+            viewMenuButton.trailingAnchor.constraint(equalTo: viewLocation.leadingAnchor, constant: -30)
+        
+        ])
     }
     
     

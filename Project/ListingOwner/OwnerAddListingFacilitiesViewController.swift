@@ -25,7 +25,14 @@ class OwnerAddListingFacilitiesViewController: UIViewController {
     
     //Custom ImagePicker
     @IBOutlet weak var chooseImage: UIButton!
+    @IBOutlet weak var uploadMenuLabel: UILabel!
+    @IBOutlet weak var uploadMenuButton: UIButton!
+    var isRestaurant = false
+    var isRestaurantButtonClicked = false
+    
+    
     var imageViews:[UIImageView] = []
+    var menuViews: [UIImageView] = []
     var urlArray:[String] = []
     
     //Variables for editing
@@ -37,6 +44,7 @@ class OwnerAddListingFacilitiesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+       
         
         if boolForEditing_3 {
             mainHeader_3.text = "Edit Facilities"
@@ -59,20 +67,40 @@ class OwnerAddListingFacilitiesViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        print("isRestaurant: \(isRestaurant)")
+        uploadMenuButton.alpha = 1
+        uploadMenuLabel.alpha = 1
+        
+        if !isRestaurant {
+            uploadMenuButton.alpha = 0
+            uploadMenuLabel.alpha = 0
+        }
+    }
+    
     @objc func buttonTouched(button: UIButton) {
       let config = Configuration()
       config.doneButtonTitle = "Done"
       config.noImagesTitle = "Sorry! There are no images here!"
       config.recordLocation = false
       config.allowVideoSelection = false
-
       let imagePicker = ImagePickerController(configuration: config)
       imagePicker.delegate = self
-
       present(imagePicker, animated: true, completion: nil)
     }
     
-    
+    @IBAction func uploadMenu(_ sender: UIButton) {
+        isRestaurantButtonClicked = true
+        let config = Configuration()
+        config.doneButtonTitle = "Done"
+        config.noImagesTitle = "Sorry! There are no images here!"
+        config.recordLocation = false
+        config.allowVideoSelection = false
+        let imagePicker = ImagePickerController(configuration: config)
+        imagePicker.delegate = self
+        present(imagePicker, animated: true, completion: nil)
+    }
     
     func CheckNumber(type: String) -> Int {
         let Number = self.defaults.integer(forKey: type)
@@ -83,17 +111,11 @@ class OwnerAddListingFacilitiesViewController: UIViewController {
         let Number = self.defaults.integer(forKey: type)
                let NewNumber = Number + 1
                self.defaults.set(NewNumber, forKey: type)
-               
     }
-    
     func addListingImagesAndURLtoStorageAndDB(ImageViewArray:[UIImageView], Completion: @escaping(([String]) -> ())){
         let myGroup = DispatchGroup()
         for Count in 0..<ImageViewArray.count {
-            
             myGroup.enter()
-            
-            
-            
             let storageRef = Storage.storage().reference(withPath: "ListinImages/\(StaticVariable.WhichType)\(StaticVariable.WhichNumber)/\(Count)")
             if let data = ImageViewArray[Count].image!.jpegData(compressionQuality: 0.75) {
                 storageRef.putData(data, metadata: nil) { (metadata, error) in
@@ -108,20 +130,47 @@ class OwnerAddListingFacilitiesViewController: UIViewController {
                                 myGroup.leave()
                             }
                         }
-                       
                     }
                 }
             }
-            
-           
+        }
+        myGroup.notify(queue: .main){
+            if !self.isRestaurant {
+                SVProgressHUD.dismiss()
+                SVProgressHUD.showSuccess(withStatus: "Listing Added Successfully")
+            }
+            Completion(self.urlArray)
+        }
+    }
+    
+    func addMenu(ImageViewArray:[UIImageView], Completion: @escaping(([String]) -> ())){
+        let myGroup = DispatchGroup()
+        for Count in 0..<ImageViewArray.count {
+            myGroup.enter()
+            let storageRef = Storage.storage().reference(withPath: "Menu/\(StaticVariable.WhichType)\(StaticVariable.WhichNumber)/\(Count)")
+            if let data = ImageViewArray[Count].image!.jpegData(compressionQuality: 0.75) {
+                storageRef.putData(data, metadata: nil) { (metadata, error) in
+                    if error != nil {print("Error is found");return}
+                    else {
+                        //print("No error here")
+                        storageRef.downloadURL { (url, error) in
+                            if let urlText = url?.absoluteString {
+                                print("Step2")
+                                //print("It is \(Count) urlText \(urlText)")
+                                self.urlArray.append(urlText)
+                                myGroup.leave()
+                            }
+                        }
+                    }
+                }
+            }
         }
         myGroup.notify(queue: .main){
             SVProgressHUD.dismiss()
             SVProgressHUD.showSuccess(withStatus: "Listing Added Successfully")
             Completion(self.urlArray)
         }
-        
- }
+    }
     
     func transitionToOwnerHomeScreen() {
         let VC = storyboard?.instantiateViewController(withIdentifier: "OwnerHomeTabBar") as? UITabBarController
@@ -129,42 +178,78 @@ class OwnerAddListingFacilitiesViewController: UIViewController {
         view.window?.makeKeyAndVisible()
     }
     
- 
     @IBAction func addListingTapped(_ sender: UIButton) {
         SVProgressHUD.show(withStatus: "Listing is being added")
         addListingImagesAndURLtoStorageAndDB(ImageViewArray: imageViews) { (ObtainedArrayOfURLs) in
-            let db = Firestore.firestore()
-            if self.boolForEditing_3 {
-                db.document(self.path!).setData(["Facilities": self.FacilitiesChoosen, "ListingImageURL" : ObtainedArrayOfURLs], merge: true){(error) in
+            
+            if self.isRestaurant {
+                self.addMenu(ImageViewArray: self.menuViews) { (obtainedMenuURLs) in
                     
-                    if error != nil {
-                        
+                    let db = Firestore.firestore()
+                    if self.boolForEditing_3 {
+                        db.document(self.path!).setData(["Facilities": self.FacilitiesChoosen, "ListingImageURL" : ObtainedArrayOfURLs, "Menu": obtainedMenuURLs], merge: true){(error) in
+                            
+                            if error != nil {
+                                
+                            }
+                            else {
+                                self.transitionToOwnerHomeScreen()
+                                
+                            }
+                        }
                     }
                     else {
-                        print("Posted")
-                        self.transitionToOwnerHomeScreen()
                         
+                        db.collection(StaticVariable.WhichType).document(self.UserID).setData(["DummyField" : "Dummy Data"])
+                        db.collection(StaticVariable.WhichType).document(self.UserID).collection(self.UserID + StaticVariable.WhichType).document(StaticVariable.WhichType + "\(StaticVariable.WhichNumber)").setData(["Facilities": self.FacilitiesChoosen, "ListingImageURL" : ObtainedArrayOfURLs, "CountOfRatings": 0.001, "AvgRating": 0.0, "Menu": obtainedMenuURLs], merge: true){(error) in
+                            
+                            if error != nil {
+                                //There is error
+                                print("Error: \(error!.localizedDescription)")
+                            }
+                            else {
+                                
+                                self.UpdateNumber(type: StaticVariable.WhichType)
+                                self.transitionToOwnerHomeScreen()
+                            }
+                        }
                     }
                 }
             }
             else {
-                   
-                db.collection(StaticVariable.WhichType).document(self.UserID).setData(["DummyField" : "Dummy Data"])
-                db.collection(StaticVariable.WhichType).document(self.UserID).collection(self.UserID + StaticVariable.WhichType).document(StaticVariable.WhichType + "\(StaticVariable.WhichNumber)").setData(["Facilities": self.FacilitiesChoosen, "ListingImageURL" : ObtainedArrayOfURLs, "CountOfRatings": 0.001, "AvgRating": 0.0], merge: true){(error) in
                 
-                if error != nil {
-                    
-                }
-                 else {
+                let db = Firestore.firestore()
+                if self.boolForEditing_3 {
+                    db.document(self.path!).setData(["Facilities": self.FacilitiesChoosen, "ListingImageURL" : ObtainedArrayOfURLs], merge: true){(error) in
                         
-                        self.UpdateNumber(type: StaticVariable.WhichType)
-                        self.transitionToOwnerHomeScreen()
+                        if error != nil {
+                            
+                        }
+                        else {
+                            print("Posted")
+                            self.transitionToOwnerHomeScreen()
+                        }
+                    }
+                }
+                else {
+                    
+                    db.collection(StaticVariable.WhichType).document(self.UserID).setData(["DummyField" : "Dummy Data"])
+                    db.collection(StaticVariable.WhichType).document(self.UserID).collection(self.UserID + StaticVariable.WhichType).document(StaticVariable.WhichType + "\(StaticVariable.WhichNumber)").setData(["Facilities": self.FacilitiesChoosen, "ListingImageURL" : ObtainedArrayOfURLs, "CountOfRatings": 0.001, "AvgRating": 0.0], merge: true){(error) in
+                        
+                        if error != nil {
+                            //There is error
+                            print("Error: \(error!.localizedDescription)")
+                        }
+                        else {
+                            
+                            self.UpdateNumber(type: StaticVariable.WhichType)
+                            self.transitionToOwnerHomeScreen()
+                        }
+                    }
                 }
             }
         }
     }
-}
-    
 }
 
 extension OwnerAddListingFacilitiesViewController : UITableViewDelegate,UITableViewDataSource {
@@ -182,7 +267,13 @@ extension OwnerAddListingFacilitiesViewController : UITableViewDelegate,UITableV
                 self.FacilitiesChoosen.append(self.Facilities[indexPath.row])
             }
             else {
-                self.FacilitiesChoosen.remove(at: indexPath.row)
+                if let facility = self.FacilitiesChoosen[safe: indexPath.row] {
+                    self.FacilitiesChoosen = self.FacilitiesChoosen.filter{ $0 != facility }
+                }
+                else {
+                    print("Index Out of range")
+                }
+                
             }
                }
         
@@ -205,11 +296,23 @@ extension OwnerAddListingFacilitiesViewController:ImagePickerDelegate {
         for Count in 0..<images.count {
             let imageView = UIImageView(image: images[Count])
             imageView.frame = CGRect(x: (0 * (110 * Count)), y: 0, width: 50, height: 50)
-            imageViews.append(imageView)
+            if isRestaurantButtonClicked {
+                menuViews.append(imageView)
+            }
+            else {
+                imageViews.append(imageView)
+            }
+            
         }
         
             imagePicker.dismiss(animated: true, completion: nil)
       }
     
+}
+
+extension Collection {
+    subscript (safe index: Index) -> Element? {
+            return indices.contains(index) ? self[index] : nil
+        }
 }
 

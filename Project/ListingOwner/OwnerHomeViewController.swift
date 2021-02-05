@@ -435,7 +435,7 @@ extension OwnerHomeViewController {
                         let Path = document.reference.path
                         self.pathArray.append(Path)
                         
-                        let data2 = New_CellComponents(image: self.arrayOfListingImages[0], typeOfListing: self.typeOfListing , charges: self.charges, rating: 4.2, nameOfListing: self.nameOfListing , cityName: self.cityName, detail: self.details, currency: self.currency, days: self.days)
+                        let data2 = New_CellComponents(image: self.arrayOfListingImages[0], typeOfListing: self.typeOfListing , charges: self.charges, rating: 0.0, nameOfListing: self.nameOfListing , cityName: self.cityName, detail: self.details, currency: self.currency, days: self.days)
                         self.listingDetailArray.append(data2)
                         self.tableView.reloadData()
                         

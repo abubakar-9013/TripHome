@@ -32,6 +32,7 @@ class SignInViewController: UIViewController {
         
         emailField.delegate = self
         passwordField.delegate = self
+        passwordField.isSecureTextEntry = true
         
         //SVProgressHUD
         SVProgressHUD.setContainerView(self.view)
@@ -50,6 +51,13 @@ class SignInViewController: UIViewController {
         
 
     }
+    
+    @IBAction func navigateToSignup(_ sender: UIButton) {
+        let controller = storyboard?.instantiateViewController(identifier: "signUpScreen") as! Signup2ViewController
+        controller.modalPresentationStyle = .fullScreen
+        self.present(controller, animated: true, completion: nil)
+    }
+    
     
     @objc func doneTapped() {
         emailField.endEditing(true)

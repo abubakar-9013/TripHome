@@ -75,7 +75,7 @@ class TouristSettingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        profile.imageView?.contentMode = .scaleToFill
+        profile.imageView?.contentMode = .scaleAspectFill
         profile.imageView?.layer.cornerRadius = 25
         profile.imageView?.layer.masksToBounds = true
         profile.imageView?.clipsToBounds = true

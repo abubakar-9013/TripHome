@@ -167,6 +167,18 @@ class testViewController: UIViewController {
         let OpenCititestapGesture = UITapGestureRecognizer(target: self, action: #selector(openCities))
         cityTextField.addGestureRecognizer(OpenCititestapGesture)
         
+        let toolBar = UIToolbar()
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+        toolBar.sizeToFit()
+        toolBar.setItems([flexSpace,doneButton], animated: true)
+        addressTextView.inputAccessoryView = toolBar
+        
+    }
+    
+    @objc func done() {
+        addressTextView.endEditing(true)
+        self.dismiss(animated: true, completion: nil)
     }
     
     
